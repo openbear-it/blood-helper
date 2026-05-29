@@ -1,0 +1,96 @@
+name: Build & Push Backend Image
+
+on:
+  push:
+    branches:
+    - main
+    - develop
+    paths:
+    - "backend/**"
+    - ".github/workflows/build-backend.yml"
+    tags:
+    - "v*.*.*"
+  pull_request:
+    branches:
+    - main
+    paths:
+    - "backend/**"
+
+env:
+  IMAGE_NAME: blood-helper-backend
+
+jobs:
+  build:
+    name: Build multi-arch backend image
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write # required when pushing to GHCR
+
+    steps:
+    # ── Checkout ────────────────────────────────────────────────────────────
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    # ── QEMU — emulate ARM64 on the x86 runner ───────────────────────────
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v3
+      with:
+        platforms: arm64
+
+    # ── Buildx — multi-platform builder ─────────────────────────────────
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    # ── Login — GitHub Container Registry ───────────────────────────────
+    - name: Log in to GitHub Container Registry
+      if: github.event_name != 'pull_request'
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    # ── Docker metadata (tags & labels) ──────────────────────────────────
+    - name: Extract Docker metadata
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}
+        tags: |
+          # Tag the branch name on non-default branches
+          type=ref,event=branch
+          # PR preview tag
+          type=ref,event=pr
+          # Semver tags: v1.2.3 → 1.2.3, 1.2, 1 (latest only on default branch)
+          type=semver,pattern={{version}}
+          type=semver,pattern={{major}}.{{minor}}
+          type=semver,pattern={{major}}
+          # Always tag the short commit SHA
+          type=sha,prefix=sha-
+          # Edge tag for the default branch
+          type=edge,branch=main
+
+    # ── Build & push ──────────────────────────────────────────────────────
+    - name: Build and push
+      uses: docker/build-push-action@v6
+      with:
+        context: ./backend
+        file: ./backend/Dockerfile
+        platforms: linux/amd64,linux/arm64
+        # Only push on non-PR events
+        push: ${{ github.event_name != 'pull_request' }}
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+        # Layer caching via GitHub Actions cache backend
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+        # Build args (non-secret)
+        build-args: |
+          BUILD_DATE=${{ github.event.head_commit.timestamp }}
+          VCS_REF=${{ github.sha }}
+
+    # ── Summary ──────────────────────────────────────────────────────────
+    - name: Image digest
+      if: github.event_name != 'pull_request'
+      run: echo "Pushed image digest ${{ steps.build-push.outputs.digest }}"
