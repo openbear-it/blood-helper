@@ -3,6 +3,7 @@ from __future__ import annotations
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.responses import Response
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.v1.schemas import HospitalCreate, HospitalResponse, DepartmentCreate, DepartmentResponse
@@ -47,7 +48,7 @@ async def get_hospital(
     return hospital
 
 
-@router.delete("/{hospital_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/{hospital_id}", status_code=status.HTTP_204_NO_CONTENT, response_class=Response)
 async def delete_hospital(
     hospital_id: UUID,
     session: AsyncSession = Depends(get_session),
