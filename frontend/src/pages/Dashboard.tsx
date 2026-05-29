@@ -60,7 +60,7 @@ export function Dashboard() {
       </Typography>
 
       <Grid container spacing={3} sx={{ mb: 3 }}>
-        <Grid item xs={12} sm={4}>
+        <Grid item xs={12} sm={6} md={3}>
           <Card sx={{ bgcolor: 'primary.main', color: 'white' }}>
             <CardContent>
               <Typography variant="h3">{hospitals?.length ?? '—'}</Typography>
@@ -68,7 +68,7 @@ export function Dashboard() {
             </CardContent>
           </Card>
         </Grid>
-        <Grid item xs={12} sm={4}>
+        <Grid item xs={12} sm={6} md={3}>
           <Card sx={{ bgcolor: criticalAlerts > 0 ? 'error.main' : 'success.main', color: 'white' }}>
             <CardContent>
               <Typography variant="h3">{criticalAlerts}</Typography>
@@ -76,11 +76,19 @@ export function Dashboard() {
             </CardContent>
           </Card>
         </Grid>
-        <Grid item xs={12} sm={4}>
+        <Grid item xs={12} sm={6} md={3}>
           <Card sx={{ bgcolor: expiringAlerts > 0 ? 'warning.main' : 'info.main', color: 'white' }}>
             <CardContent>
               <Typography variant="h3">{expiringAlerts}</Typography>
               <Typography variant="body1">Expiring Units (3d)</Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <Card sx={{ bgcolor: 'secondary.main', color: 'white' }}>
+            <CardContent>
+              <Typography variant="h3">{activeCampaigns}</Typography>
+              <Typography variant="body1">Active Campaigns</Typography>
             </CardContent>
           </Card>
         </Grid>

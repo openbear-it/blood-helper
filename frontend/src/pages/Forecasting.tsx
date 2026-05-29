@@ -14,7 +14,6 @@ import {
   Alert,
 } from '@mui/material'
 import {
-  LineChart,
   Line,
   XAxis,
   YAxis,
