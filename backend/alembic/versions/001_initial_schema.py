@@ -41,25 +41,25 @@ def upgrade() -> None:
         "A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-",
         name="bloodtype",
     )
-    blood_type_enum.create(op.get_bind())
+    blood_type_enum.create(op.get_bind(), checkfirst=True)
 
     wastage_reason_enum = postgresql.ENUM(
         "expired", "contaminated", "administrative", "other",
         name="wastagEreason",
     )
-    wastage_reason_enum.create(op.get_bind())
+    wastage_reason_enum.create(op.get_bind(), checkfirst=True)
 
     forecast_horizon_enum = postgresql.ENUM(
         "daily", "weekly", "monthly",
         name="forecasthorizon",
     )
-    forecast_horizon_enum.create(op.get_bind())
+    forecast_horizon_enum.create(op.get_bind(), checkfirst=True)
 
     campaign_status_enum = postgresql.ENUM(
         "draft", "active", "completed", "cancelled",
         name="campaignstatus",
     )
-    campaign_status_enum.create(op.get_bind())
+    campaign_status_enum.create(op.get_bind(), checkfirst=True)
 
     op.create_table(
         "blood_units",
