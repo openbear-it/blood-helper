@@ -124,6 +124,8 @@ class ForecastRequest(BaseModel):
 
 
 class ForecastResultResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True, protected_namespaces=())
+
     id: UUID
     hospital_id: UUID
     department_id: UUID | None
