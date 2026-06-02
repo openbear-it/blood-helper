@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: blood-helper-config
+  namespace: blood-helper
+data:
+  ENVIRONMENT: "production"
+  DEBUG: "false"
+  API_V1_PREFIX: "/api/v1"
+  # Database (host references the in-cluster Service name)
+  DATABASE_URL: "postgresql+asyncpg://blood-helper:$(POSTGRES_PASSWORD)@postgres:5432/blood-helper"
+  DATABASE_URL_SYNC: "postgresql+psycopg2://blood-helper:$(POSTGRES_PASSWORD)@postgres:5432/blood-helper"
+  POSTGRES_DB: "blood-helper"
+  POSTGRES_USER: "blood-helper"
+  # Redis
+  REDIS_URL: "redis://redis:6379/0"
+  # Celery
+  CELERY_BROKER_URL: "redis://redis:6379/0"
+  CELERY_RESULT_BACKEND: "redis://redis:6379/1"
+  # CORS — update with your actual frontend domain
+  CORS_ORIGINS: '["https://blood-helper.openbear.it"]'

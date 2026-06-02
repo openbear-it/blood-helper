@@ -1,0 +1,48 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: blood-helper-migrate-v2
+  namespace: blood-helper
+  labels:
+    app: blood-helper-migrate
+    app.kubernetes.io/component: migration
+  annotations:
+    # Helm-style hook if you later adopt Helm
+    # helm.sh/hook: pre-install,pre-upgrade
+spec:
+  ttlSecondsAfterFinished: 300
+  backoffLimit: 3
+  template:
+    metadata:
+      labels:
+        app: blood-helper-migrate
+    spec:
+      restartPolicy: OnFailure
+      containers:
+      - name: migrate
+        image: ghcr.io/openbear-it/blood-helper-backend:main
+        imagePullPolicy: Always
+        command: [ "alembic", "upgrade", "head" ]
+        envFrom:
+        - configMapRef:
+            name: blood-helper-config
+        env:
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: blood-helper-secret
+              key: POSTGRES_PASSWORD
+        - name: DATABASE_URL_SYNC
+          value: "postgresql+psycopg2://blood-helper:$(POSTGRES_PASSWORD)@postgres:5432/blood-helper"
+        - name: SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: blood-helper-secret
+              key: SECRET_KEY
+        resources:
+          requests:
+            cpu: 25m
+            memory: 64Mi
+          limits:
+            cpu: 200m
+            memory: 256Mi

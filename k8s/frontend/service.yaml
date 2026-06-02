@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: blood-helper-frontend
+  namespace: blood-helper
+  labels:
+    app: blood-helper-frontend
+    app.kubernetes.io/component: frontend
+spec:
+  type: ClusterIP
+  selector:
+    app: blood-helper-frontend
+  ports:
+  - port: 3000
+    targetPort: 3000
+    protocol: TCP
+    name: http

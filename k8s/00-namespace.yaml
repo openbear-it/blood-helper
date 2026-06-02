@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: blood-helper
+  labels:
+    app.kubernetes.io/name: blood-helper
+    app.kubernetes.io/managed-by: kustomize

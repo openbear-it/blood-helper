@@ -1,0 +1,42 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: blood-helper-ingress
+  namespace: blood-helper
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    kubernetes.io/ingress.class: "traefik"
+spec:
+  tls:
+  - hosts:
+    - blood-helper.openbear.it
+    secretName: blood-helper-tls
+
+  rules:
+  - host: blood-helper.openbear.it # Replace with your actual domain
+    http:
+      paths:
+      # WebSocket — must come before /api to avoid path shadowing
+      - path: /ws
+        pathType: Prefix
+        backend:
+          service:
+            name: blood-helper-backend
+            port:
+              number: 8000
+      # REST API
+      - path: /api
+        pathType: Prefix
+        backend:
+          service:
+            name: blood-helper-backend
+            port:
+              number: 8000
+      # Frontend SPA (catch-all)
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: blood-helper-frontend
+            port:
+              number: 3000

@@ -5,13 +5,13 @@ from datetime import date, datetime
 from decimal import Decimal
 
 from sqlalchemy import (
-    ARRAY,
     Boolean,
     Date,
     DateTime,
     Enum as SAEnum,
     ForeignKey,
     Integer,
+    JSON,
     Numeric,
     String,
     Text,
@@ -138,7 +138,7 @@ class DonationCampaignORM(Base):
     hospital_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("hospitals.id"), nullable=False)
     title: Mapped[str] = mapped_column(String(255), nullable=False)
     description: Mapped[str] = mapped_column(Text, default="")
-    target_blood_types: Mapped[list[str]] = mapped_column(ARRAY(String), nullable=False)
+    target_blood_types: Mapped[list[str]] = mapped_column(JSON, nullable=False)
     target_units: Mapped[int] = mapped_column(Integer, nullable=False)
     collected_units: Mapped[int] = mapped_column(Integer, default=0)
     start_date: Mapped[date] = mapped_column(Date, nullable=False)

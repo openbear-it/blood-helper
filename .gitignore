@@ -26,8 +26,9 @@ dist/
 # Docker
 .docker/
 
-# Kubernetes
-k8s/
+# Kubernetes — track manifests but never commit secrets
+# k8s/02-secret.yaml is listed here to prevent accidental commit of real credentials
+k8s/02-secret.yaml
 
 # IDE
 .vscode/

@@ -1,0 +1,31 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: blood-helper
+
+resources:
+# 0. Namespace (always first)
+- 00-namespace.yaml
+# 1. Config & Secrets
+- 01-configmap.yaml
+# NOTE: 02-secret.yaml is gitignored — copy from 02-secret.example.yaml and fill in values
+- 02-secret.yaml
+# 2. Data layer
+- postgres/statefulset.yaml
+- postgres/service.yaml
+- redis/deployment.yaml
+- redis/service.yaml
+# 3. Schema migration (run once before backend starts)
+- backend/migration-job.yaml
+# 4. Application layer
+- backend/deployment.yaml
+- backend/service.yaml
+- backend/hpa.yaml
+# 5. Async workers
+- celery/worker.yaml
+- celery/beat.yaml
+# 6. Frontend
+- frontend/deployment.yaml
+- frontend/service.yaml
+# 7. Ingress (always last)
+- ingress.yaml
