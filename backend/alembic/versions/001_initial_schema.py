@@ -37,29 +37,33 @@ def upgrade() -> None:
         sa.UniqueConstraint("hospital_id", "code", name="uq_dept_hospital_code"),
     )
 
-    blood_type_enum = postgresql.ENUM(
-        "A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-",
-        name="bloodtype",
-    )
-    blood_type_enum.create(op.get_bind(), checkfirst=True)
+    op.execute("""
+        DO $$ BEGIN
+            CREATE TYPE bloodtype AS ENUM ('A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-');
+        EXCEPTION WHEN duplicate_object THEN NULL;
+        END $$;
+    """)
 
-    wastage_reason_enum = postgresql.ENUM(
-        "expired", "contaminated", "administrative", "other",
-        name="wastagEreason",
-    )
-    wastage_reason_enum.create(op.get_bind(), checkfirst=True)
+    op.execute("""
+        DO $$ BEGIN
+            CREATE TYPE "wastagEreason" AS ENUM ('expired', 'contaminated', 'administrative', 'other');
+        EXCEPTION WHEN duplicate_object THEN NULL;
+        END $$;
+    """)
 
-    forecast_horizon_enum = postgresql.ENUM(
-        "daily", "weekly", "monthly",
-        name="forecasthorizon",
-    )
-    forecast_horizon_enum.create(op.get_bind(), checkfirst=True)
+    op.execute("""
+        DO $$ BEGIN
+            CREATE TYPE forecasthorizon AS ENUM ('daily', 'weekly', 'monthly');
+        EXCEPTION WHEN duplicate_object THEN NULL;
+        END $$;
+    """)
 
-    campaign_status_enum = postgresql.ENUM(
-        "draft", "active", "completed", "cancelled",
-        name="campaignstatus",
-    )
-    campaign_status_enum.create(op.get_bind(), checkfirst=True)
+    op.execute("""
+        DO $$ BEGIN
+            CREATE TYPE campaignstatus AS ENUM ('draft', 'active', 'completed', 'cancelled');
+        EXCEPTION WHEN duplicate_object THEN NULL;
+        END $$;
+    """)
 
     op.create_table(
         "blood_units",
