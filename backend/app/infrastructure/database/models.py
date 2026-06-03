@@ -3,6 +3,8 @@ from __future__ import annotations
 import uuid
 from datetime import date, datetime
 from decimal import Decimal
+from enum import Enum
+from typing import TypeVar
 
 from sqlalchemy import (
     Boolean,
@@ -27,6 +29,18 @@ from app.domain.enums import (
     InventoryStatus,
     WastageReason,
 )
+
+_E = TypeVar("_E", bound=Enum)
+
+
+def _enum(enum_cls: type[_E]) -> SAEnum:
+    """SAEnum that stores .value (e.g. 'A+') not .name (e.g. 'A_POSITIVE')."""
+    return SAEnum(
+        enum_cls,
+        values_callable=lambda x: [e.value for e in x],
+        create_constraint=False,
+        native_enum=True,
+    )
 
 
 class Base(DeclarativeBase):
@@ -72,7 +86,7 @@ class BloodUnitORM(Base):
 
     id: Mapped[uuid.UUID] = mapped_column(PGUUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     hospital_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("hospitals.id"), nullable=False)
-    blood_type: Mapped[BloodType] = mapped_column(SAEnum(BloodType), nullable=False)
+    blood_type: Mapped[BloodType] = mapped_column(_enum(BloodType), nullable=False)
     units_available: Mapped[int] = mapped_column(Integer, nullable=False)
     units_reserved: Mapped[int] = mapped_column(Integer, default=0)
     expiry_date: Mapped[date] = mapped_column(Date, nullable=False)
@@ -87,7 +101,7 @@ class BloodConsumptionORM(Base):
     id: Mapped[uuid.UUID] = mapped_column(PGUUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     hospital_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("hospitals.id"), nullable=False)
     department_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("departments.id"), nullable=False)
-    blood_type: Mapped[BloodType] = mapped_column(SAEnum(BloodType), nullable=False)
+    blood_type: Mapped[BloodType] = mapped_column(_enum(BloodType), nullable=False)
     units_consumed: Mapped[int] = mapped_column(Integer, nullable=False)
     consumption_date: Mapped[date] = mapped_column(Date, nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
@@ -101,9 +115,9 @@ class WastageORM(Base):
 
     id: Mapped[uuid.UUID] = mapped_column(PGUUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     hospital_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("hospitals.id"), nullable=False)
-    blood_type: Mapped[BloodType] = mapped_column(SAEnum(BloodType), nullable=False)
+    blood_type: Mapped[BloodType] = mapped_column(_enum(BloodType), nullable=False)
     units_wasted: Mapped[int] = mapped_column(Integer, nullable=False)
-    reason: Mapped[WastageReason] = mapped_column(SAEnum(WastageReason), nullable=False)
+    reason: Mapped[WastageReason] = mapped_column(_enum(WastageReason), nullable=False)
     wastage_date: Mapped[date] = mapped_column(Date, nullable=False)
     notes: Mapped[str] = mapped_column(Text, default="")
     estimated_cost: Mapped[Decimal] = mapped_column(Numeric(10, 2), default=Decimal("0"))
@@ -118,8 +132,8 @@ class ForecastResultORM(Base):
     id: Mapped[uuid.UUID] = mapped_column(PGUUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     hospital_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("hospitals.id"), nullable=False)
     department_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("departments.id"), nullable=True)
-    blood_type: Mapped[BloodType] = mapped_column(SAEnum(BloodType), nullable=False)
-    horizon: Mapped[ForecastHorizon] = mapped_column(SAEnum(ForecastHorizon), nullable=False)
+    blood_type: Mapped[BloodType] = mapped_column(_enum(BloodType), nullable=False)
+    horizon: Mapped[ForecastHorizon] = mapped_column(_enum(ForecastHorizon), nullable=False)
     forecast_date: Mapped[date] = mapped_column(Date, nullable=False)
     predicted_units: Mapped[float] = mapped_column(Numeric(10, 2), nullable=False)
     lower_bound: Mapped[float] = mapped_column(Numeric(10, 2), nullable=False)
@@ -143,7 +157,7 @@ class DonationCampaignORM(Base):
     collected_units: Mapped[int] = mapped_column(Integer, default=0)
     start_date: Mapped[date] = mapped_column(Date, nullable=False)
     end_date: Mapped[date] = mapped_column(Date, nullable=False)
-    status: Mapped[CampaignStatus] = mapped_column(SAEnum(CampaignStatus), default=CampaignStatus.DRAFT)
+    status: Mapped[CampaignStatus] = mapped_column(_enum(CampaignStatus), default=CampaignStatus.DRAFT)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
