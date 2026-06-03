@@ -23,6 +23,7 @@ import { useActiveCampaigns, useHospitals, useDonateToMutation } from '@/hooks/u
 import { campaignApi } from '@/services/api'
 import { useQueryClient } from '@tanstack/react-query'
 import type { BloodType, Campaign } from '@/types'
+import { useTranslation } from 'react-i18next'
 
 const STATUS_COLOR: Record<string, 'success' | 'primary' | 'default' | 'error'> = {
   active: 'success',
@@ -36,13 +37,14 @@ function CampaignCard({ campaign }: { campaign: Campaign }) {
   const [units, setUnits] = useState(1)
   const donateMutation = useDonateToMutation(campaign.id)
   const qc = useQueryClient()
+  const { t } = useTranslation()
 
   return (
     <Card>
       <CardContent>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
           <Typography variant="h6">{campaign.title}</Typography>
-          <Chip label={campaign.status} color={STATUS_COLOR[campaign.status] ?? 'default'} size="small" />
+          <Chip label={t(`campaigns.status.${campaign.status}`)} color={STATUS_COLOR[campaign.status] ?? 'default'} size="small" />
         </Box>
         <Typography variant="body2" color="textSecondary" sx={{ mb: 1 }}>
           {campaign.description}
@@ -66,7 +68,7 @@ function CampaignCard({ campaign }: { campaign: Campaign }) {
         </Typography>
         {campaign.status === 'active' && (
           <Button size="small" variant="contained" sx={{ mt: 1 }} onClick={() => setDonateOpen(true)}>
-            Donate
+            {t('common.donate')}
           </Button>
         )}
         {campaign.status === 'draft' && (
@@ -79,16 +81,16 @@ function CampaignCard({ campaign }: { campaign: Campaign }) {
               campaignApi.activate(campaign.id).then(() => qc.invalidateQueries({ queryKey: ['campaigns'] }))
             }}
           >
-            Activate
+            {t('common.activate')}
           </Button>
         )}
       </CardContent>
 
       <Dialog open={donateOpen} onClose={() => setDonateOpen(false)}>
-        <DialogTitle>Record Donation</DialogTitle>
+        <DialogTitle>{t('campaigns.recordDonation')}</DialogTitle>
         <DialogContent>
           <TextField
-            label="Units"
+            label={t('inventory.unitsCount')}
             type="number"
             value={units}
             onChange={e => setUnits(Number(e.target.value))}
@@ -97,13 +99,13 @@ function CampaignCard({ campaign }: { campaign: Campaign }) {
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setDonateOpen(false)}>Cancel</Button>
+          <Button onClick={() => setDonateOpen(false)}>{t('common.cancel')}</Button>
           <Button
             variant="contained"
             disabled={donateMutation.isPending}
             onClick={() => donateMutation.mutate(units, { onSuccess: () => setDonateOpen(false) })}
           >
-            Confirm
+            {t('common.confirm')}
           </Button>
         </DialogActions>
       </Dialog>
@@ -115,6 +117,7 @@ export function CampaignsPage() {
   const { data: campaigns, isLoading } = useActiveCampaigns()
   const { data: hospitals } = useHospitals()
   const [createOpen, setCreateOpen] = useState(false)
+  const { t } = useTranslation()
   const [form, setForm] = useState({
     hospitalId: '',
     title: '',
@@ -142,8 +145,8 @@ export function CampaignsPage() {
   return (
     <Box>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
-        <Typography variant="h4" fontWeight="bold">Donation Campaigns</Typography>
-        <Button variant="contained" onClick={() => setCreateOpen(true)}>+ New Campaign</Button>
+        <Typography variant="h4" fontWeight="bold">{t('campaigns.title')}</Typography>
+        <Button variant="contained" onClick={() => setCreateOpen(true)}>{t('campaigns.createNew')}</Button>
       </Box>
 
       {isLoading ? (
@@ -157,40 +160,40 @@ export function CampaignsPage() {
           ))}
           {!campaigns?.length && (
             <Grid item xs={12}>
-              <Typography color="textSecondary">No active campaigns.</Typography>
+              <Typography color="textSecondary">{t('campaigns.noActiveCampaigns')}</Typography>
             </Grid>
           )}
         </Grid>
       )}
 
       <Dialog open={createOpen} onClose={() => setCreateOpen(false)} maxWidth="sm" fullWidth>
-        <DialogTitle>Create Campaign</DialogTitle>
+        <DialogTitle>{t('campaigns.createTitle')}</DialogTitle>
         <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 2 }}>
           <FormControl>
-            <InputLabel>Hospital</InputLabel>
+            <InputLabel>{t('common.hospital')}</InputLabel>
             <Select
               value={form.hospitalId}
-              label="Hospital"
+              label={t('common.hospital')}
               onChange={e => setForm(f => ({ ...f, hospitalId: e.target.value }))}
             >
               {hospitals?.map(h => <MenuItem key={h.id} value={h.id}>{h.name}</MenuItem>)}
             </Select>
           </FormControl>
-          <TextField label="Title" value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))} />
+          <TextField label={t('campaigns.campaignTitle')} value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))} />
           <TextField
-            label="Description"
+            label={t('campaigns.description')}
             multiline
             rows={2}
             value={form.description}
             onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
           />
           <FormControl>
-            <InputLabel>Target Blood Types</InputLabel>
+            <InputLabel>{t('campaigns.targetBloodTypes')}</InputLabel>
             <Select
               multiple
               value={form.target_blood_types}
               onChange={e => setForm(f => ({ ...f, target_blood_types: e.target.value as BloodType[] }))}
-              input={<OutlinedInput label="Target Blood Types" />}
+              input={<OutlinedInput label={t('campaigns.targetBloodTypes')} />}
               renderValue={selected => (
                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                   {(selected as BloodType[]).map(v => <Chip key={v} label={v} size="small" />)}
@@ -203,20 +206,20 @@ export function CampaignsPage() {
             </Select>
           </FormControl>
           <TextField
-            label="Target Units"
+            label={t('campaigns.targetUnits')}
             type="number"
             value={form.target_units}
             onChange={e => setForm(f => ({ ...f, target_units: Number(e.target.value) }))}
           />
           <TextField
-            label="Start Date"
+            label={t('campaigns.startDate')}
             type="date"
             InputLabelProps={{ shrink: true }}
             value={form.start_date}
             onChange={e => setForm(f => ({ ...f, start_date: e.target.value }))}
           />
           <TextField
-            label="End Date"
+            label={t('campaigns.endDate')}
             type="date"
             InputLabelProps={{ shrink: true }}
             value={form.end_date}
@@ -224,13 +227,13 @@ export function CampaignsPage() {
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setCreateOpen(false)}>Cancel</Button>
+          <Button onClick={() => setCreateOpen(false)}>{t('common.cancel')}</Button>
           <Button
             variant="contained"
             disabled={!form.hospitalId || !form.title || !form.start_date || !form.end_date}
             onClick={handleCreate}
           >
-            Create
+            {t('campaigns.createNew')}
           </Button>
         </DialogActions>
       </Dialog>

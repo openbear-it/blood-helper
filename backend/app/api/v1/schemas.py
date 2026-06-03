@@ -171,6 +171,31 @@ class CampaignResponse(BaseModel):
     updated_at: datetime
 
 
+# ── PSI ─────────────────────────────────────────────────────────────────────
+
+class PSIBloodTypeResponse(BaseModel):
+    blood_type: BloodType
+    psi: float
+    stock_total: float
+    stock_net_valid: float
+    expected_demand: float
+    expected_inflows: float
+    at_risk_units: float
+    horizon_days: int
+    percentile: int
+    method: str
+
+
+class PSIResponse(BaseModel):
+    hospital_id: UUID
+    horizon_days: int
+    percentile: int
+    method: str
+    overall_psi: float
+    critical_types: list[BloodType]
+    by_blood_type: list[PSIBloodTypeResponse]
+
+
 # ── Analytics ───────────────────────────────────────────────────────────────
 
 class InventorySummaryResponse(BaseModel):

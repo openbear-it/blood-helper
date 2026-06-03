@@ -1,0 +1,101 @@
+{
+  "nav": {
+    "dashboard": "Dashboard",
+    "hospitals": "Ospedali",
+    "inventory": "Magazzino",
+    "forecasting": "Previsioni",
+    "campaigns": "Campagne"
+  },
+  "common": {
+    "loading": "Caricamento...",
+    "cancel": "Annulla",
+    "save": "Salva",
+    "close": "Chiudi",
+    "confirm": "Conferma",
+    "activate": "Attiva",
+    "donate": "Registra donazione",
+    "units": "unità",
+    "selectHospital": "Seleziona Ospedale",
+    "hospital": "Ospedale"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "hospitalsMonitored": "Ospedali Monitorati",
+    "criticalAlerts": "Allerte Critiche",
+    "expiringUnits": "Sacche in Scadenza (3g)",
+    "activeCampaigns": "Campagne Attive",
+    "inventoryByHospital": "Magazzino per Ospedale",
+    "activeDonationCampaigns": "Campagne di Donazione Attive",
+    "psiTitle": "PSI — Indice di Pressione sull'Offerta",
+    "psiLegend": "PSI ≥ 1.5 sufficiente · 1.0 – 1.5 attenzione · PSI < 1.0 rischio carenza",
+    "psiCritical": "Critici (PSI < 1): {{types}}",
+    "psiFormula": "PSI = (Stock netto valido + Ingressi previsti) / Domanda prevista · orizzonte {{days}}g · p{{percentile}}",
+    "stockNetValid": "Stock netto valido",
+    "stockTotal": "Stock totale",
+    "atRisk": "A rischio scadenza",
+    "expectedDemand": "Domanda prevista",
+    "expectedInflows": "Ingressi netti previsti",
+    "critical": "Critico",
+    "expiring": "In scadenza"
+  },
+  "psi": {
+    "static": "Statico",
+    "ewma": "EWMA",
+    "infinity": "∞"
+  },
+  "inventory": {
+    "title": "Magazzino Sangue",
+    "addUnits": "+ Aggiungi Sacche",
+    "addUnitsTitle": "Aggiungi Sacche",
+    "bloodType": "Gruppo Sanguigno",
+    "available": "Disponibili",
+    "reserved": "Riservate",
+    "expiringSoon": "In scadenza",
+    "expiryDate": "Data Scadenza",
+    "unitsCount": "Unità",
+    "criticalInventory": "Scorte critiche: {{types}}",
+    "wastageByType": "Sprechi per Gruppo (ultimi 30g)",
+    "inventoryByType": "Scorte per Gruppo Sanguigno",
+    "noHospitalSelected": "Seleziona un ospedale per visualizzare il magazzino",
+    "status": {
+      "adequate": "Adeguato",
+      "low": "Basso",
+      "critical": "Critico",
+      "surplus": "Surplus"
+    }
+  },
+  "forecasting": {
+    "title": "Previsione Consumi",
+    "bloodType": "Gruppo Sanguigno",
+    "horizon": "Orizzonte",
+    "runForecast": "Esegui Previsione",
+    "running": "In esecuzione...",
+    "noData": "Nessun dato disponibile. Esegui una previsione per vedere i risultati.",
+    "predicted": "Previsto",
+    "confidence": "Intervallo di confidenza",
+    "horizons": {
+      "daily": "Giornaliero",
+      "weekly": "Settimanale",
+      "monthly": "Mensile"
+    }
+  },
+  "campaigns": {
+    "title": "Campagne di Donazione",
+    "createNew": "Crea Campagna",
+    "createTitle": "Nuova Campagna di Donazione",
+    "campaignTitle": "Titolo Campagna",
+    "description": "Descrizione",
+    "targetBloodTypes": "Gruppi Sanguigni Target",
+    "targetUnits": "Unità Obiettivo",
+    "startDate": "Data Inizio",
+    "endDate": "Data Fine",
+    "recordDonation": "Registra Donazione",
+    "noActiveCampaigns": "Nessuna campagna attiva",
+    "status": {
+      "active": "Attiva",
+      "draft": "Bozza",
+      "completed": "Completata",
+      "cancelled": "Annullata"
+    }
+  }
+}

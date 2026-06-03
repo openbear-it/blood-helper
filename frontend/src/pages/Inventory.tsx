@@ -34,6 +34,7 @@ import {
 } from 'recharts'
 import { useHospitals, useInventorySummary, useWastageAnalysis, useAddBloodUnits } from '@/hooks/useApi'
 import type { BloodType } from '@/types'
+import { useTranslation } from 'react-i18next'
 
 const STATUS_COLORS = {
   adequate: '#4caf50',
@@ -48,6 +49,7 @@ export function InventoryPage() {
   const [hospitalId, setHospitalId] = useState('')
   const [addOpen, setAddOpen] = useState(false)
   const [addForm, setAddForm] = useState({ blood_type: 'O+' as BloodType, units_available: 10, expiry_date: '' })
+  const { t } = useTranslation()
 
   const { data: hospitals } = useHospitals()
   const { data: summary, isLoading } = useInventorySummary(hospitalId)
@@ -79,13 +81,13 @@ export function InventoryPage() {
 
   return (
     <Box>
-      <Typography variant="h4" gutterBottom fontWeight="bold">Blood Inventory</Typography>
+      <Typography variant="h4" gutterBottom fontWeight="bold">{t('inventory.title')}</Typography>
 
       <Grid container spacing={2} sx={{ mb: 3 }} alignItems="center">
         <Grid item xs={12} sm={4}>
           <FormControl fullWidth>
-            <InputLabel>Select Hospital</InputLabel>
-            <Select value={hospitalId} label="Select Hospital" onChange={e => setHospitalId(e.target.value)}>
+            <InputLabel>{t('common.selectHospital')}</InputLabel>
+            <Select value={hospitalId} label={t('common.selectHospital')} onChange={e => setHospitalId(e.target.value)}>
               {hospitals?.map(h => (
                 <MenuItem key={h.id} value={h.id}>{h.name}</MenuItem>
               ))}
@@ -94,7 +96,7 @@ export function InventoryPage() {
         </Grid>
         {hospitalId && (
           <Grid item>
-            <Button variant="contained" onClick={() => setAddOpen(true)}>+ Add Blood Units</Button>
+            <Button variant="contained" onClick={() => setAddOpen(true)}>{t('inventory.addUnits')}</Button>
           </Grid>
         )}
       </Grid>
@@ -105,7 +107,7 @@ export function InventoryPage() {
         <>
           {summary.critical_types.length > 0 && (
             <Alert severity="error" sx={{ mb: 2 }}>
-              Critical inventory: {summary.critical_types.join(', ')}
+              {t('inventory.criticalInventory', { types: summary.critical_types.join(', ') })}
             </Alert>
           )}
 
@@ -118,7 +120,7 @@ export function InventoryPage() {
                     <CardContent sx={{ pb: '16px !important' }}>
                       <Typography variant="h5" fontWeight="bold">{bt}</Typography>
                       <Typography variant="h4" color={STATUS_COLORS[status]}>{data.available}</Typography>
-                      <Typography variant="caption">units available</Typography>
+                      <Typography variant="caption">{t('common.units')}</Typography>
                       <br />
                       <Chip label={status} size="small" sx={{ mt: 0.5, backgroundColor: STATUS_COLORS[status], color: 'white' }} />
                     </CardContent>
@@ -132,7 +134,7 @@ export function InventoryPage() {
             <Grid item xs={12} md={8}>
               <Card>
                 <CardContent>
-                  <Typography variant="h6">Inventory by Blood Type</Typography>
+                  <Typography variant="h6">{t('inventory.inventoryByType')}</Typography>
                   <ResponsiveContainer width="100%" height={300}>
                     <BarChart data={inventoryBarData}>
                       <CartesianGrid strokeDasharray="3 3" />
@@ -140,9 +142,9 @@ export function InventoryPage() {
                       <YAxis />
                       <Tooltip />
                       <Legend />
-                      <Bar dataKey="available" fill="#1565c0" name="Available" />
-                      <Bar dataKey="reserved" fill="#ff9800" name="Reserved" />
-                      <Bar dataKey="expiring" fill="#f44336" name="Expiring Soon" />
+                      <Bar dataKey="available" fill="#1565c0" name={t('inventory.available')} />
+                      <Bar dataKey="reserved" fill="#ff9800" name={t('inventory.reserved')} />
+                      <Bar dataKey="expiring" fill="#f44336" name={t('inventory.expiringSoon')} />
                     </BarChart>
                   </ResponsiveContainer>
                 </CardContent>
@@ -153,7 +155,7 @@ export function InventoryPage() {
               <Grid item xs={12} md={4}>
                 <Card>
                   <CardContent>
-                    <Typography variant="h6">Wastage (Last 30 days)</Typography>
+                    <Typography variant="h6">{t('inventory.wastageByType')}</Typography>
                     <Typography variant="h5" color="error">
                       {wastage.total_units_wasted} units
                     </Typography>
@@ -179,13 +181,13 @@ export function InventoryPage() {
       )}
 
       <Dialog open={addOpen} onClose={() => setAddOpen(false)}>
-        <DialogTitle>Add Blood Units</DialogTitle>
+        <DialogTitle>{t('inventory.addUnitsTitle')}</DialogTitle>
         <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 2 }}>
           <FormControl>
-            <InputLabel>Blood Type</InputLabel>
+            <InputLabel>{t('inventory.bloodType')}</InputLabel>
             <Select
               value={addForm.blood_type}
-              label="Blood Type"
+              label={t('inventory.bloodType')}
               onChange={e => setAddForm(f => ({ ...f, blood_type: e.target.value as BloodType }))}
             >
               {(['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'] as BloodType[]).map(bt => (
@@ -194,13 +196,13 @@ export function InventoryPage() {
             </Select>
           </FormControl>
           <TextField
-            label="Units"
+            label={t('inventory.unitsCount')}
             type="number"
             value={addForm.units_available}
             onChange={e => setAddForm(f => ({ ...f, units_available: Number(e.target.value) }))}
           />
           <TextField
-            label="Expiry Date"
+            label={t('inventory.expiryDate')}
             type="date"
             InputLabelProps={{ shrink: true }}
             value={addForm.expiry_date}
@@ -208,7 +210,7 @@ export function InventoryPage() {
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setAddOpen(false)}>Cancel</Button>
+          <Button onClick={() => setAddOpen(false)}>{t('common.cancel')}</Button>
           <Button
             variant="contained"
             disabled={addMutation.isPending || !addForm.expiry_date}

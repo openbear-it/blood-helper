@@ -5,6 +5,8 @@ import type {
   Hospital,
   Department,
   InventorySummary,
+  PSIResult,
+  ScenarioMethod,
   WastageAnalysis,
   BloodType,
   ForecastHorizon,
@@ -47,6 +49,11 @@ export const inventoryApi = {
     }).then(r => r.data),
   getExpiringUnits: (hospitalId: string, days = 3) =>
     api.get(`/hospitals/${hospitalId}/inventory/expiring`, { params: { days } }).then(r => r.data),
+  getPSI: (
+    hospitalId: string,
+    params?: { horizon_days?: number; percentile?: number; method?: ScenarioMethod; history_days?: number; friction?: number }
+  ) =>
+    api.get<PSIResult>(`/hospitals/${hospitalId}/inventory/psi`, { params }).then(r => r.data),
 }
 
 // ── Forecasting ──────────────────────────────────────────────────────────────

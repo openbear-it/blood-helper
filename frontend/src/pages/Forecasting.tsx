@@ -26,6 +26,7 @@ import {
 } from 'recharts'
 import { useHospitals, useForecasts, useRunForecast } from '@/hooks/useApi'
 import type { BloodType, ForecastHorizon } from '@/types'
+import { useTranslation } from 'react-i18next'
 
 const BLOOD_TYPES: BloodType[] = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']
 const HORIZONS: ForecastHorizon[] = ['daily', 'weekly', 'monthly']
@@ -34,6 +35,7 @@ export function ForecastingPage() {
   const [hospitalId, setHospitalId] = useState('')
   const [bloodType, setBloodType] = useState<BloodType>('O+')
   const [horizon, setHorizon] = useState<ForecastHorizon>('daily')
+  const { t } = useTranslation()
 
   const { data: hospitals } = useHospitals()
   const { data: forecasts, isLoading } = useForecasts(hospitalId, bloodType, horizon)
@@ -49,7 +51,7 @@ export function ForecastingPage() {
   return (
     <Box>
       <Typography variant="h4" gutterBottom fontWeight="bold">
-        Consumption Forecasting
+        {t('forecasting.title')}
       </Typography>
 
       <Card sx={{ mb: 3 }}>
@@ -57,8 +59,8 @@ export function ForecastingPage() {
           <Grid container spacing={2} alignItems="center">
             <Grid item xs={12} sm={3}>
               <FormControl fullWidth>
-                <InputLabel>Hospital</InputLabel>
-                <Select value={hospitalId} label="Hospital" onChange={e => setHospitalId(e.target.value)}>
+                <InputLabel>{t('common.hospital')}</InputLabel>
+                <Select value={hospitalId} label={t('common.hospital')} onChange={e => setHospitalId(e.target.value)}>
                   {hospitals?.map(h => (
                     <MenuItem key={h.id} value={h.id}>{h.name}</MenuItem>
                   ))}
@@ -67,8 +69,8 @@ export function ForecastingPage() {
             </Grid>
             <Grid item xs={12} sm={3}>
               <FormControl fullWidth>
-                <InputLabel>Blood Type</InputLabel>
-                <Select value={bloodType} label="Blood Type" onChange={e => setBloodType(e.target.value as BloodType)}>
+                <InputLabel>{t('forecasting.bloodType')}</InputLabel>
+                <Select value={bloodType} label={t('forecasting.bloodType')} onChange={e => setBloodType(e.target.value as BloodType)}>
                   {BLOOD_TYPES.map(bt => (
                     <MenuItem key={bt} value={bt}>{bt}</MenuItem>
                   ))}
@@ -77,10 +79,10 @@ export function ForecastingPage() {
             </Grid>
             <Grid item xs={12} sm={3}>
               <FormControl fullWidth>
-                <InputLabel>Horizon</InputLabel>
-                <Select value={horizon} label="Horizon" onChange={e => setHorizon(e.target.value as ForecastHorizon)}>
+                <InputLabel>{t('forecasting.horizon')}</InputLabel>
+                <Select value={horizon} label={t('forecasting.horizon')} onChange={e => setHorizon(e.target.value as ForecastHorizon)}>
                   {HORIZONS.map(h => (
-                    <MenuItem key={h} value={h}>{h.charAt(0).toUpperCase() + h.slice(1)}</MenuItem>
+                    <MenuItem key={h} value={h}>{t(`forecasting.horizons.${h}`)}</MenuItem>
                   ))}
                 </Select>
               </FormControl>
@@ -92,7 +94,7 @@ export function ForecastingPage() {
                 disabled={!hospitalId || runMutation.isPending}
                 onClick={() => runMutation.mutate({ blood_type: bloodType, horizon })}
               >
-                {runMutation.isPending ? <CircularProgress size={20} /> : 'Run Forecast'}
+                {runMutation.isPending ? <CircularProgress size={20} /> : t('forecasting.runForecast')}
               </Button>
             </Grid>
           </Grid>
@@ -100,7 +102,7 @@ export function ForecastingPage() {
       </Card>
 
       {runMutation.isError && (
-        <Alert severity="error" sx={{ mb: 2 }}>Failed to run forecast. Please try again.</Alert>
+        <Alert severity="error" sx={{ mb: 2 }}>{t('forecasting.noData')}</Alert>
       )}
 
       {isLoading ? (
@@ -123,14 +125,14 @@ export function ForecastingPage() {
                   dataKey="upper"
                   fill="#ffccbc"
                   stroke="transparent"
-                  name="Upper Bound"
+                  name={t('forecasting.confidence')}
                 />
                 <Area
                   type="monotone"
                   dataKey="lower"
                   fill="white"
                   stroke="transparent"
-                  name="Lower Bound"
+                  name={t('forecasting.confidence')}
                 />
                 <Line
                   type="monotone"
@@ -138,7 +140,7 @@ export function ForecastingPage() {
                   stroke="#c62828"
                   strokeWidth={2}
                   dot={false}
-                  name="Predicted Units"
+                  name={t('forecasting.predicted')}
                 />
               </AreaChart>
             </ResponsiveContainer>
@@ -150,7 +152,7 @@ export function ForecastingPage() {
           </CardContent>
         </Card>
       ) : hospitalId ? (
-        <Alert severity="info">No forecast data available. Click "Run Forecast" to generate predictions.</Alert>
+        <Alert severity="info">{t('forecasting.noData')}</Alert>
       ) : null}
     </Box>
   )

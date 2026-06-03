@@ -12,11 +12,14 @@ from app.api.v1.schemas import (
     ConsumeBloodRequest,
     ConsumptionResponse,
     InventorySummaryResponse,
+    PSIResponse,
+    PSIBloodTypeResponse,
     WastageAnalysisResponse,
     WastageCreate,
     WastageResponse,
 )
 from app.application.services.blood_inventory import BloodInventoryService
+from app.application.services.psi import PSIService, ScenarioMethod
 from app.domain.blood_inventory.models import BloodUnit
 from app.infrastructure.database.session import get_session
 from app.infrastructure.repositories.blood_inventory import (
@@ -148,3 +151,47 @@ async def get_expiring_units(
 ) -> list[BloodUnitResponse]:
     units = await svc.get_expiring_units(hospital_id, days)
     return [_unit_to_response(u) for u in units]
+
+
+@router.get("/psi", response_model=PSIResponse)
+async def get_psi(
+    hospital_id: UUID,
+    horizon_days: int = Query(default=7, ge=1, le=30),
+    percentile: int = Query(default=95, ge=1, le=99),
+    method: ScenarioMethod = Query(default=ScenarioMethod.STATIC),
+    history_days: int = Query(default=90, ge=14, le=365),
+    friction: float = Query(default=0.05, ge=0.0, le=0.5),
+    session: AsyncSession = Depends(get_session),
+) -> PSIResponse:
+    svc = PSIService(session)
+    result = await svc.compute(
+        hospital_id=hospital_id,
+        horizon_days=horizon_days,
+        percentile=percentile,
+        method=method,
+        history_days=history_days,
+        friction=friction,
+    )
+    return PSIResponse(
+        hospital_id=result.hospital_id,
+        horizon_days=result.horizon_days,
+        percentile=result.percentile,
+        method=result.method.value,
+        overall_psi=result.overall_psi,
+        critical_types=result.critical_types,
+        by_blood_type=[
+            PSIBloodTypeResponse(
+                blood_type=r.blood_type,
+                psi=r.psi,
+                stock_total=r.stock_total,
+                stock_net_valid=r.stock_net_valid,
+                expected_demand=r.expected_demand,
+                expected_inflows=r.expected_inflows,
+                at_risk_units=r.at_risk_units,
+                horizon_days=r.horizon_days,
+                percentile=r.percentile,
+                method=r.method.value,
+            )
+            for r in result.by_blood_type
+        ],
+    )

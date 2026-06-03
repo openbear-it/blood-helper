@@ -1,0 +1,101 @@
+{
+  "nav": {
+    "dashboard": "Dashboard",
+    "hospitals": "Hospitals",
+    "inventory": "Inventory",
+    "forecasting": "Forecasting",
+    "campaigns": "Campaigns"
+  },
+  "common": {
+    "loading": "Loading...",
+    "cancel": "Cancel",
+    "save": "Save",
+    "close": "Close",
+    "confirm": "Confirm",
+    "activate": "Activate",
+    "donate": "Donate",
+    "units": "units",
+    "selectHospital": "Select Hospital",
+    "hospital": "Hospital"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "hospitalsMonitored": "Hospitals Monitored",
+    "criticalAlerts": "Critical Alerts",
+    "expiringUnits": "Expiring Units (3d)",
+    "activeCampaigns": "Active Campaigns",
+    "inventoryByHospital": "Inventory by Hospital",
+    "activeDonationCampaigns": "Active Donation Campaigns",
+    "psiTitle": "PSI — Pressure Supply Index",
+    "psiLegend": "PSI ≥ 1.5 sufficient · 1.0 – 1.5 warning · PSI < 1.0 shortage risk",
+    "psiCritical": "Critical (PSI < 1): {{types}}",
+    "psiFormula": "PSI = (Net valid stock + Expected inflows) / Expected demand · horizon {{days}}d · p{{percentile}}",
+    "stockNetValid": "Net valid stock",
+    "stockTotal": "Total stock",
+    "atRisk": "At expiry risk",
+    "expectedDemand": "Expected demand",
+    "expectedInflows": "Expected inflows",
+    "critical": "Critical",
+    "expiring": "Expiring"
+  },
+  "psi": {
+    "static": "Static",
+    "ewma": "EWMA",
+    "infinity": "∞"
+  },
+  "inventory": {
+    "title": "Blood Inventory",
+    "addUnits": "+ Add Blood Units",
+    "addUnitsTitle": "Add Blood Units",
+    "bloodType": "Blood Type",
+    "available": "Available",
+    "reserved": "Reserved",
+    "expiringSoon": "Expiring soon",
+    "expiryDate": "Expiry Date",
+    "unitsCount": "Units",
+    "criticalInventory": "Critical inventory: {{types}}",
+    "wastageByType": "Wastage by Blood Type (last 30d)",
+    "inventoryByType": "Inventory by Blood Type",
+    "noHospitalSelected": "Select a hospital to view inventory",
+    "status": {
+      "adequate": "Adequate",
+      "low": "Low",
+      "critical": "Critical",
+      "surplus": "Surplus"
+    }
+  },
+  "forecasting": {
+    "title": "Consumption Forecasting",
+    "bloodType": "Blood Type",
+    "horizon": "Horizon",
+    "runForecast": "Run Forecast",
+    "running": "Running...",
+    "noData": "No forecast data available. Run a forecast to see results.",
+    "predicted": "Predicted",
+    "confidence": "Confidence interval",
+    "horizons": {
+      "daily": "Daily",
+      "weekly": "Weekly",
+      "monthly": "Monthly"
+    }
+  },
+  "campaigns": {
+    "title": "Donation Campaigns",
+    "createNew": "Create Campaign",
+    "createTitle": "New Donation Campaign",
+    "campaignTitle": "Campaign Title",
+    "description": "Description",
+    "targetBloodTypes": "Target Blood Types",
+    "targetUnits": "Target Units",
+    "startDate": "Start Date",
+    "endDate": "End Date",
+    "recordDonation": "Record Donation",
+    "noActiveCampaigns": "No active campaigns",
+    "status": {
+      "active": "Active",
+      "draft": "Draft",
+      "completed": "Completed",
+      "cancelled": "Cancelled"
+    }
+  }
+}

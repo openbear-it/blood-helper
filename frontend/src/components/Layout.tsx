@@ -14,6 +14,8 @@ import {
   Typography,
   Badge,
   Tooltip,
+  Button,
+  ButtonGroup,
 } from '@mui/material'
 import MenuIcon from '@mui/icons-material/Menu'
 import DashboardIcon from '@mui/icons-material/Dashboard'
@@ -23,15 +25,21 @@ import TrendingUpIcon from '@mui/icons-material/TrendingUp'
 import VolunteerActivismIcon from '@mui/icons-material/VolunteerActivism'
 import WarningAmberIcon from '@mui/icons-material/WarningAmber'
 import { useAlertsWebSocket } from '@/hooks/useAlertsWebSocket'
+import { useTranslation } from 'react-i18next'
 
 const DRAWER_WIDTH = 240
 
-const NAV_ITEMS = [
-  { label: 'Dashboard', path: '/', icon: <DashboardIcon /> },
-  { label: 'Hospitals', path: '/hospitals', icon: <LocalHospitalIcon /> },
-  { label: 'Inventory', path: '/inventory', icon: <BloodtypeIcon /> },
-  { label: 'Forecasting', path: '/forecasting', icon: <TrendingUpIcon /> },
-  { label: 'Campaigns', path: '/campaigns', icon: <VolunteerActivismIcon /> },
+const NAV_PATHS = [
+  { key: 'dashboard', path: '/', icon: <DashboardIcon /> },
+  { key: 'hospitals', path: '/hospitals', icon: <LocalHospitalIcon /> },
+  { key: 'inventory', path: '/inventory', icon: <BloodtypeIcon /> },
+  { key: 'forecasting', path: '/forecasting', icon: <TrendingUpIcon /> },
+  { key: 'campaigns', path: '/campaigns', icon: <VolunteerActivismIcon /> },
+]
+
+const SUPPORTED_LANGS = [
+  { code: 'it', label: '🇮🇹 IT' },
+  { code: 'en', label: '🇬🇧 EN' },
 ]
 
 export function Layout({ children }: { children: ReactNode }) {
@@ -39,6 +47,7 @@ export function Layout({ children }: { children: ReactNode }) {
   const navigate = useNavigate()
   const location = useLocation()
   const { alerts } = useAlertsWebSocket()
+  const { t, i18n } = useTranslation()
   const alertCount =
     (alerts?.critical_levels?.length ?? 0) + (alerts?.expiring_units?.length ?? 0)
 
@@ -50,14 +59,14 @@ export function Layout({ children }: { children: ReactNode }) {
         </Typography>
       </Toolbar>
       <List>
-        {NAV_ITEMS.map(item => (
+        {NAV_PATHS.map(item => (
           <ListItem key={item.path} disablePadding>
             <ListItemButton
               selected={location.pathname === item.path}
               onClick={() => navigate(item.path)}
             >
               <ListItemIcon>{item.icon}</ListItemIcon>
-              <ListItemText primary={item.label} />
+              <ListItemText primary={t(`nav.${item.key}`)} />
             </ListItemButton>
           </ListItem>
         ))}
@@ -80,6 +89,23 @@ export function Layout({ children }: { children: ReactNode }) {
           <Typography variant="h6" noWrap sx={{ flexGrow: 1 }}>
             blood-helper Intelligence Platform
           </Typography>
+          <ButtonGroup size="small" variant="outlined" sx={{ mr: 1 }}>
+            {SUPPORTED_LANGS.map(lang => (
+              <Button
+                key={lang.code}
+                onClick={() => i18n.changeLanguage(lang.code)}
+                sx={{
+                  color: 'white',
+                  borderColor: 'rgba(255,255,255,0.5)',
+                  fontWeight: i18n.language === lang.code ? 'bold' : 'normal',
+                  bgcolor: i18n.language === lang.code ? 'rgba(255,255,255,0.15)' : 'transparent',
+                  '&:hover': { bgcolor: 'rgba(255,255,255,0.25)', borderColor: 'white' },
+                }}
+              >
+                {lang.label}
+              </Button>
+            ))}
+          </ButtonGroup>
           {alertCount > 0 && (
             <Tooltip title={`${alertCount} active alerts`}>
               <Badge badgeContent={alertCount} color="warning">

@@ -100,3 +100,28 @@ export interface Campaign {
   created_at: string
   updated_at: string
 }
+
+export type ScenarioMethod = 'static' | 'ewma'
+
+export interface PSIBloodTypeResult {
+  blood_type: BloodType
+  psi: number
+  stock_total: number
+  stock_net_valid: number
+  expected_demand: number
+  expected_inflows: number
+  at_risk_units: number
+  horizon_days: number
+  percentile: number
+  method: ScenarioMethod
+}
+
+export interface PSIResult {
+  hospital_id: string
+  horizon_days: number
+  percentile: number
+  method: ScenarioMethod
+  overall_psi: number
+  critical_types: BloodType[]
+  by_blood_type: PSIBloodTypeResult[]
+}

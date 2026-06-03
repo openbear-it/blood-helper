@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { hospitalApi, inventoryApi, forecastApi, campaignApi } from '@/services/api'
-import type { BloodType, ForecastHorizon, WastageReason } from '@/types'
+import type { BloodType, ForecastHorizon, ScenarioMethod, WastageReason } from '@/types'
 
 // ── Hospital Hooks ────────────────────────────────────────────────────────────
 
@@ -127,5 +127,19 @@ export function useDonateToMutation(campaignId: string) {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['campaigns'] })
     },
+  })
+}
+
+// ── PSI Hooks ────────────────────────────────────────────────────────────────
+
+export function usePSI(
+  hospitalId: string,
+  params?: { horizon_days?: number; percentile?: number; method?: ScenarioMethod; history_days?: number; friction?: number }
+) {
+  return useQuery({
+    queryKey: ['psi', hospitalId, params],
+    queryFn: () => inventoryApi.getPSI(hospitalId, params),
+    enabled: !!hospitalId,
+    refetchInterval: 60_000,
   })
 }
