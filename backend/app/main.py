@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import subprocess
 from contextlib import asynccontextmanager
 from concurrent.futures import ThreadPoolExecutor
 from typing import AsyncGenerator
@@ -14,11 +15,18 @@ logger = logging.getLogger(__name__)
 
 
 def _run_alembic_upgrade() -> None:
-    from alembic import command
-    from alembic.config import Config
-
-    alembic_cfg = Config("/app/alembic.ini")
-    command.upgrade(alembic_cfg, "head")
+    result = subprocess.run(
+        ["alembic", "upgrade", "head"],
+        cwd="/app",
+        capture_output=True,
+        text=True,
+    )
+    if result.stdout:
+        logger.info(result.stdout)
+    if result.stderr:
+        logger.info(result.stderr)
+    if result.returncode != 0:
+        raise RuntimeError(f"alembic upgrade failed (exit {result.returncode})")
 
 
 @asynccontextmanager

@@ -15,9 +15,7 @@ resources:
 - postgres/service.yaml
 - redis/deployment.yaml
 - redis/service.yaml
-# 3. Schema migration (run once before backend starts)
-- backend/migration-job.yaml
-# 4. Application layer
+# 3. Application layer (migrations run automatically on startup via lifespan)
 - backend/deployment.yaml
 - backend/service.yaml
 - backend/hpa.yaml
