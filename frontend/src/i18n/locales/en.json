@@ -4,7 +4,8 @@
     "hospitals": "Hospitals",
     "inventory": "Inventory",
     "forecasting": "Forecasting",
-    "campaigns": "Campaigns"
+    "campaigns": "Campaigns",
+    "info": "About"
   },
   "common": {
     "loading": "Loading...",
@@ -97,5 +98,62 @@
       "completed": "Completed",
       "cancelled": "Cancelled"
     }
+  },
+  "info": {
+    "title": "About blood-helper",
+    "subtitle": "An intelligent platform for blood bank management and predictive analytics",
+    "overviewTitle": "Project Overview",
+    "overviewText": "blood-helper is a production-grade platform that combines real-time inventory monitoring, machine learning forecasting, and donation campaign management to help hospitals maintain safe blood supply levels.",
+    "featuresTitle": "Key Features",
+    "features": [
+      "Real-time blood inventory monitoring with critical alert WebSocket push",
+      "Per-hospital, per-blood-type consumption forecasting (daily / weekly / monthly)",
+      "PSI — Pressure Supply Index: stress-scenario supply sufficiency metric",
+      "Wastage analysis with cost estimation by blood type and reason",
+      "Donation campaign lifecycle: create → activate → track → complete",
+      "Multi-language interface (Italiano / English)"
+    ],
+    "architectureTitle": "Architecture",
+    "architectureItems": [
+      { "label": "Backend", "value": "Python 3.12 · FastAPI · SQLAlchemy 2 async · Alembic" },
+      { "label": "Database", "value": "PostgreSQL 16 with native ENUM types" },
+      { "label": "Cache & Tasks", "value": "Redis · Celery (beat + worker)" },
+      { "label": "Frontend", "value": "React 18 · TypeScript · Material UI v5 · Recharts" },
+      { "label": "Infrastructure", "value": "Kubernetes (kustomize) · Docker · Horizontal Pod Autoscaler" },
+      { "label": "Observability", "value": "WebSocket real-time alerts · Coverage reporting" }
+    ],
+    "mlTitle": "Machine Learning Algorithms",
+    "mlModels": [
+      {
+        "name": "Prophet",
+        "description": "Time-series forecasting model developed by Meta. Handles seasonality, holidays, and trend changepoints. Used for daily/weekly/monthly blood consumption prediction."
+      },
+      {
+        "name": "XGBoost",
+        "description": "Gradient-boosted decision trees for tabular data. Used as an ensemble alternative for departments with irregular or sparse consumption history."
+      },
+      {
+        "name": "Scikit-Learn",
+        "description": "Provides preprocessing pipelines, feature engineering, and fallback linear regression models. Used to generate training data splits and evaluation metrics."
+      }
+    ],
+    "psiTitle": "PSI — Pressure Supply Index",
+    "psiDescription": "The PSI is a dimensionless sufficiency ratio computed per blood type per hospital:",
+    "psiFormula": "PSI = (Net Valid Stock + Expected Net Inflows) / Expected Demand",
+    "psiComponents": [
+      { "label": "Net Valid Stock", "value": "Units that will NOT expire within the forecast horizon, minus reserved units" },
+      { "label": "Expected Demand", "value": "Statistical percentile of daily consumption history × horizon days (Static or EWMA-weighted)" },
+      { "label": "Expected Net Inflows", "value": "Median of historical inflows × horizon × (1 − friction δ), capped conservatively" },
+      { "label": "Static method", "value": "Full history percentile (stable, ignores recent trends)" },
+      { "label": "EWMA method", "value": "Exponentially-weighted moving average — more sensitive to recent demand shifts" }
+    ],
+    "psiThresholds": [
+      { "label": "PSI ≥ 1.5", "color": "#2e7d32", "meaning": "Supply is sufficient" },
+      { "label": "1.0 ≤ PSI < 1.5", "color": "#f57c00", "meaning": "Warning — monitor closely" },
+      { "label": "PSI < 1.0", "color": "#c62828", "meaning": "Shortage risk — activate campaign" }
+    ],
+    "stackTitle": "Tech Stack",
+    "versionLabel": "Version",
+    "version": "1.0.0"
   }
 }

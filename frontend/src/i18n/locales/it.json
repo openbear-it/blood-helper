@@ -4,7 +4,8 @@
     "hospitals": "Ospedali",
     "inventory": "Magazzino",
     "forecasting": "Previsioni",
-    "campaigns": "Campagne"
+    "campaigns": "Campagne",
+    "info": "Info"
   },
   "common": {
     "loading": "Caricamento...",
@@ -97,5 +98,62 @@
       "completed": "Completata",
       "cancelled": "Annullata"
     }
+  },
+  "info": {
+    "title": "About blood-helper",
+    "subtitle": "Piattaforma intelligente per la gestione delle banche del sangue e l'analisi predittiva",
+    "overviewTitle": "Panoramica del Progetto",
+    "overviewText": "blood-helper è una piattaforma production-grade che combina monitoraggio in tempo reale delle scorte, previsioni tramite machine learning e gestione delle campagne di donazione, per aiutare gli ospedali a mantenere livelli di scorte sicuri.",
+    "featuresTitle": "Funzionalità Principali",
+    "features": [
+      "Monitoraggio in tempo reale del magazzino sangue con alert critici via WebSocket",
+      "Previsione dei consumi per ospedale e gruppo sanguigno (giornaliera / settimanale / mensile)",
+      "PSI — Indice di Pressione sull'Offerta: metrica di sufficienza in scenari di stress",
+      "Analisi degli sprechi con stima dei costi per gruppo e causa",
+      "Ciclo di vita delle campagne di donazione: crea → attiva → monitora → completa",
+      "Interfaccia multilingua (Italiano / English)"
+    ],
+    "architectureTitle": "Architettura",
+    "architectureItems": [
+      { "label": "Backend", "value": "Python 3.12 · FastAPI · SQLAlchemy 2 async · Alembic" },
+      { "label": "Database", "value": "PostgreSQL 16 con tipi ENUM nativi" },
+      { "label": "Cache & Task", "value": "Redis · Celery (beat + worker)" },
+      { "label": "Frontend", "value": "React 18 · TypeScript · Material UI v5 · Recharts" },
+      { "label": "Infrastruttura", "value": "Kubernetes (kustomize) · Docker · Horizontal Pod Autoscaler" },
+      { "label": "Osservabilità", "value": "Alert real-time via WebSocket · Report di copertura test" }
+    ],
+    "mlTitle": "Algoritmi di Machine Learning",
+    "mlModels": [
+      {
+        "name": "Prophet",
+        "description": "Modello di forecasting per serie temporali sviluppato da Meta. Gestisce stagionalità, festività e cambi di trend. Usato per prevedere i consumi giornalieri/settimanali/mensili di sangue."
+      },
+      {
+        "name": "XGBoost",
+        "description": "Gradient boosting su alberi decisionali per dati tabulari. Usato come alternativa ensemble per reparti con storico dei consumi irregolare o scarso."
+      },
+      {
+        "name": "Scikit-Learn",
+        "description": "Pipeline di preprocessing, feature engineering e modelli di regressione lineare come fallback. Usato per suddividere i dati di training e calcolare le metriche di valutazione."
+      }
+    ],
+    "psiTitle": "PSI — Indice di Pressione sull'Offerta",
+    "psiDescription": "Il PSI è un rapporto adimensionale di sufficienza calcolato per gruppo sanguigno e per ospedale:",
+    "psiFormula": "PSI = (Stock Netto Valido + Ingressi Netti Previsti) / Domanda Prevista",
+    "psiComponents": [
+      { "label": "Stock Netto Valido", "value": "Unità che NON scadranno entro l'orizzonte di previsione, meno quelle riservate" },
+      { "label": "Domanda Prevista", "value": "Percentile statistico dello storico consumi giornalieri × giorni orizzonte (Statico o pesato EWMA)" },
+      { "label": "Ingressi Netti Previsti", "value": "Mediana degli ingressi storici × orizzonte × (1 − attrito δ), stimata conservativamente" },
+      { "label": "Metodo Statico", "value": "Percentile sull'intero storico (stabile, ignora i trend recenti)" },
+      { "label": "Metodo EWMA", "value": "Media mobile esponenzialmente ponderata — più sensibile ai cambiamenti recenti della domanda" }
+    ],
+    "psiThresholds": [
+      { "label": "PSI ≥ 1.5", "color": "#2e7d32", "meaning": "Scorte sufficienti" },
+      { "label": "1.0 ≤ PSI < 1.5", "color": "#f57c00", "meaning": "Attenzione — monitorare" },
+      { "label": "PSI < 1.0", "color": "#c62828", "meaning": "Rischio carenza — attivare campagna" }
+    ],
+    "stackTitle": "Stack Tecnologico",
+    "versionLabel": "Versione",
+    "version": "1.0.0"
   }
 }

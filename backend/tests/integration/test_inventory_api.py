@@ -129,3 +129,76 @@ async def test_record_wastage(client: AsyncClient):
     data = response.json()
     assert data["units_wasted"] == 3
     assert float(data["estimated_cost"]) == 750.0
+
+
+@pytest.mark.asyncio
+async def test_psi_empty_hospital(client: AsyncClient):
+    """PSI endpoint returns a valid response even when there is no stock."""
+    hospital = await _create_hospital(client)
+    hospital_id = hospital["id"]
+
+    response = await client.get(
+        f"/api/v1/hospitals/{hospital_id}/inventory/psi",
+        params={"horizon_days": 7, "percentile": 95, "method": "static"},
+    )
+    assert response.status_code == 200
+    data = response.json()
+    assert "overall_psi" in data
+    assert "by_blood_type" in data
+    assert "critical_types" in data
+    assert isinstance(data["by_blood_type"], list)
+
+
+@pytest.mark.asyncio
+async def test_psi_with_stock(client: AsyncClient):
+    """PSI endpoint computes a finite PSI when stock is present."""
+    hospital = await _create_hospital(client)
+    hospital_id = hospital["id"]
+
+    # Add stock for O+
+    await client.post(
+        f"/api/v1/hospitals/{hospital_id}/inventory/units",
+        json={
+            "blood_type": "O+",
+            "units_available": 50,
+            "expiry_date": (date.today() + timedelta(days=30)).isoformat(),
+        },
+    )
+
+    response = await client.get(
+        f"/api/v1/hospitals/{hospital_id}/inventory/psi",
+        params={"horizon_days": 7, "percentile": 50, "method": "static"},
+    )
+    assert response.status_code == 200
+    data = response.json()
+    blood_types = {row["blood_type"]: row for row in data["by_blood_type"]}
+    assert "O+" in blood_types
+    assert blood_types["O+"]["stock_net_valid"] == 50
+
+
+@pytest.mark.asyncio
+async def test_psi_ewma_method(client: AsyncClient):
+    """PSI endpoint works with the EWMA method."""
+    hospital = await _create_hospital(client)
+    hospital_id = hospital["id"]
+
+    response = await client.get(
+        f"/api/v1/hospitals/{hospital_id}/inventory/psi",
+        params={"horizon_days": 3, "percentile": 95, "method": "ewma"},
+    )
+    assert response.status_code == 200
+    assert "overall_psi" in response.json()
+
+
+@pytest.mark.asyncio
+async def test_psi_invalid_params(client: AsyncClient):
+    """PSI endpoint validates query parameters."""
+    hospital = await _create_hospital(client)
+    hospital_id = hospital["id"]
+
+    # horizon_days out of range
+    response = await client.get(
+        f"/api/v1/hospitals/{hospital_id}/inventory/psi",
+        params={"horizon_days": 99},
+    )
+    assert response.status_code == 422

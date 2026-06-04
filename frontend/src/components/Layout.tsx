@@ -19,11 +19,11 @@ import {
 } from '@mui/material'
 import MenuIcon from '@mui/icons-material/Menu'
 import DashboardIcon from '@mui/icons-material/Dashboard'
-import LocalHospitalIcon from '@mui/icons-material/LocalHospital'
 import BloodtypeIcon from '@mui/icons-material/Bloodtype'
 import TrendingUpIcon from '@mui/icons-material/TrendingUp'
 import VolunteerActivismIcon from '@mui/icons-material/VolunteerActivism'
 import WarningAmberIcon from '@mui/icons-material/WarningAmber'
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import { useAlertsWebSocket } from '@/hooks/useAlertsWebSocket'
 import { useTranslation } from 'react-i18next'
 
@@ -31,10 +31,10 @@ const DRAWER_WIDTH = 240
 
 const NAV_PATHS = [
   { key: 'dashboard', path: '/', icon: <DashboardIcon /> },
-  { key: 'hospitals', path: '/hospitals', icon: <LocalHospitalIcon /> },
   { key: 'inventory', path: '/inventory', icon: <BloodtypeIcon /> },
   { key: 'forecasting', path: '/forecasting', icon: <TrendingUpIcon /> },
   { key: 'campaigns', path: '/campaigns', icon: <VolunteerActivismIcon /> },
+  { key: 'info', path: '/info', icon: <InfoOutlinedIcon /> },
 ]
 
 const SUPPORTED_LANGS = [

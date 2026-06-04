@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import uuid
 from datetime import date, datetime
 from decimal import Decimal
@@ -18,8 +19,9 @@ from sqlalchemy import (
     Text,
     UniqueConstraint,
 )
-from sqlalchemy.dialects.postgresql import ARRAY, UUID as PGUUID
+from sqlalchemy.dialects.postgresql import UUID as PGUUID
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
+from sqlalchemy.types import TypeDecorator
 
 from app.domain.enums import (
     BloodType,
@@ -40,6 +42,35 @@ def _enum(enum_cls: type[_E]) -> SAEnum:
         create_constraint=False,
         native_enum=True,
     )
+
+
+class StringArray(TypeDecorator):
+    """list[str] stored as PostgreSQL ARRAY(String) or JSON text for SQLite."""
+
+    impl = Text
+    cache_ok = True
+
+    def load_dialect_impl(self, dialect):  # type: ignore[override]
+        if dialect.name == "postgresql":
+            from sqlalchemy.dialects.postgresql import ARRAY as PG_ARRAY
+            return dialect.type_descriptor(PG_ARRAY(String()))
+        return dialect.type_descriptor(Text())
+
+    def process_bind_param(self, value, dialect):  # type: ignore[override]
+        if value is None:
+            return None
+        if dialect.name == "postgresql":
+            return value
+        return json.dumps(value)
+
+    def process_result_value(self, value, dialect):  # type: ignore[override]
+        if value is None:
+            return None
+        if dialect.name == "postgresql":
+            return value
+        if isinstance(value, list):
+            return value
+        return json.loads(value)
 
 
 class Base(DeclarativeBase):
@@ -151,7 +182,7 @@ class DonationCampaignORM(Base):
     hospital_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("hospitals.id"), nullable=False)
     title: Mapped[str] = mapped_column(String(255), nullable=False)
     description: Mapped[str] = mapped_column(Text, default="")
-    target_blood_types: Mapped[list[str]] = mapped_column(ARRAY(String()), nullable=False)
+    target_blood_types: Mapped[list[str]] = mapped_column(StringArray(), nullable=False)
     target_units: Mapped[int] = mapped_column(Integer, nullable=False)
     collected_units: Mapped[int] = mapped_column(Integer, default=0)
     start_date: Mapped[date] = mapped_column(Date, nullable=False)

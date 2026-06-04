@@ -4,6 +4,7 @@ import { Dashboard } from '@/pages/Dashboard'
 import { InventoryPage } from '@/pages/Inventory'
 import { ForecastingPage } from '@/pages/Forecasting'
 import { CampaignsPage } from '@/pages/Campaigns'
+import { InfoPage } from '@/pages/Info'
 import { Providers } from '@/providers'
 
 function App() {
@@ -13,10 +14,10 @@ function App() {
         <Layout>
           <Routes>
             <Route path="/" element={<Dashboard />} />
-            <Route path="/hospitals" element={<Dashboard />} />
             <Route path="/inventory" element={<InventoryPage />} />
             <Route path="/forecasting" element={<ForecastingPage />} />
             <Route path="/campaigns" element={<CampaignsPage />} />
+            <Route path="/info" element={<InfoPage />} />
           </Routes>
         </Layout>
       </BrowserRouter>
