@@ -21,6 +21,7 @@ import MenuIcon from '@mui/icons-material/Menu'
 import DashboardIcon from '@mui/icons-material/Dashboard'
 import BloodtypeIcon from '@mui/icons-material/Bloodtype'
 import TrendingUpIcon from '@mui/icons-material/TrendingUp'
+import HistoryIcon from '@mui/icons-material/History'
 import VolunteerActivismIcon from '@mui/icons-material/VolunteerActivism'
 import WarningAmberIcon from '@mui/icons-material/WarningAmber'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
@@ -33,6 +34,7 @@ const NAV_PATHS = [
   { key: 'dashboard', path: '/', icon: <DashboardIcon /> },
   { key: 'inventory', path: '/inventory', icon: <BloodtypeIcon /> },
   { key: 'forecasting', path: '/forecasting', icon: <TrendingUpIcon /> },
+  { key: 'history', path: '/history', icon: <HistoryIcon /> },
   { key: 'campaigns', path: '/campaigns', icon: <VolunteerActivismIcon /> },
   { key: 'info', path: '/info', icon: <InfoOutlinedIcon /> },
 ]

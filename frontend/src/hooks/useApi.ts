@@ -143,3 +143,16 @@ export function usePSI(
     refetchInterval: 60_000,
   })
 }
+
+export function useInventoryHistory(
+  hospitalId: string,
+  startDate: string,
+  endDate: string,
+  bloodType?: string,
+) {
+  return useQuery({
+    queryKey: ['inventory', 'history', hospitalId, startDate, endDate, bloodType],
+    queryFn: () => inventoryApi.getHistory(hospitalId, startDate, endDate, bloodType),
+    enabled: !!hospitalId && !!startDate && !!endDate,
+  })
+}

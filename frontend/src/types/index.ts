@@ -125,3 +125,30 @@ export interface PSIResult {
   critical_types: BloodType[]
   by_blood_type: PSIBloodTypeResult[]
 }
+
+export interface HistoricalDataPoint {
+  date: string
+  blood_type: string
+  units_consumed: number
+  units_wasted: number
+  wastage_cost: number
+}
+
+export interface HistoricalSummaryByType {
+  consumed: number
+  wasted: number
+  wastage_cost: number
+}
+
+export interface HistoricalSummary {
+  total_consumed: number
+  total_wasted: number
+  total_wastage_cost: number
+  by_blood_type: Record<string, HistoricalSummaryByType>
+}
+
+export interface HistoricalDataResponse {
+  period: { start: string; end: string }
+  data: HistoricalDataPoint[]
+  summary: HistoricalSummary
+}

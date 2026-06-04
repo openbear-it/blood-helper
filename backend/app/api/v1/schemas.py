@@ -210,3 +210,32 @@ class WastageAnalysisResponse(BaseModel):
     total_estimated_cost: float
     by_blood_type: dict[str, dict]
     by_reason: dict[str, int]
+
+
+# ── Historical Data ──────────────────────────────────────────────────────────
+
+class HistoricalDailyPoint(BaseModel):
+    date: date
+    blood_type: str
+    units_consumed: int
+    units_wasted: int
+    wastage_cost: float
+
+
+class HistoricalSummaryByType(BaseModel):
+    consumed: int
+    wasted: int
+    wastage_cost: float
+
+
+class HistoricalSummary(BaseModel):
+    total_consumed: int
+    total_wasted: int
+    total_wastage_cost: float
+    by_blood_type: dict[str, HistoricalSummaryByType]
+
+
+class HistoricalDataResponse(BaseModel):
+    period: dict[str, str]
+    data: list[HistoricalDailyPoint]
+    summary: HistoricalSummary

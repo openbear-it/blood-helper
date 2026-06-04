@@ -159,5 +159,69 @@ class BloodInventoryService:
             "by_reason": by_reason,
         }
 
+    async def get_history(
+        self,
+        hospital_id: uuid.UUID,
+        start_date: date,
+        end_date: date,
+        blood_type: BloodType | None = None,
+    ) -> dict:
+        from collections import defaultdict
+
+        consumption_records = await self._consumption.get_by_hospital(hospital_id, start_date, end_date)
+        wastage_records = await self._wastage.get_by_hospital(hospital_id, start_date, end_date)
+
+        if blood_type is not None:
+            consumption_records = [r for r in consumption_records if r.blood_type == blood_type]
+            wastage_records = [r for r in wastage_records if r.blood_type == blood_type]
+
+        daily: dict[tuple[str, str], dict] = defaultdict(
+            lambda: {"units_consumed": 0, "units_wasted": 0, "wastage_cost": 0.0}
+        )
+
+        for r in consumption_records:
+            key = (r.consumption_date.isoformat(), r.blood_type.value)
+            daily[key]["units_consumed"] += r.units_consumed
+
+        for r in wastage_records:
+            key = (r.wastage_date.isoformat(), r.blood_type.value)
+            daily[key]["units_wasted"] += r.units_wasted
+            daily[key]["wastage_cost"] += float(r.estimated_cost)
+
+        data = [
+            {
+                "date": k[0],
+                "blood_type": k[1],
+                "units_consumed": v["units_consumed"],
+                "units_wasted": v["units_wasted"],
+                "wastage_cost": v["wastage_cost"],
+            }
+            for k, v in sorted(daily.items())
+        ]
+
+        by_type: dict[str, dict] = {}
+        for r in consumption_records:
+            bt = r.blood_type.value
+            if bt not in by_type:
+                by_type[bt] = {"consumed": 0, "wasted": 0, "wastage_cost": 0.0}
+            by_type[bt]["consumed"] += r.units_consumed
+        for r in wastage_records:
+            bt = r.blood_type.value
+            if bt not in by_type:
+                by_type[bt] = {"consumed": 0, "wasted": 0, "wastage_cost": 0.0}
+            by_type[bt]["wasted"] += r.units_wasted
+            by_type[bt]["wastage_cost"] += float(r.estimated_cost)
+
+        return {
+            "period": {"start": start_date.isoformat(), "end": end_date.isoformat()},
+            "data": data,
+            "summary": {
+                "total_consumed": sum(r.units_consumed for r in consumption_records),
+                "total_wasted": sum(r.units_wasted for r in wastage_records),
+                "total_wastage_cost": sum(float(r.estimated_cost) for r in wastage_records),
+                "by_blood_type": by_type,
+            },
+        }
+
     async def _invalidate_inventory_cache(self, hospital_id: uuid.UUID) -> None:
         await redis_client.delete(f"inventory:summary:{hospital_id}")

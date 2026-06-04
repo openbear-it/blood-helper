@@ -3,6 +3,7 @@ import { Layout } from '@/components/Layout'
 import { Dashboard } from '@/pages/Dashboard'
 import { InventoryPage } from '@/pages/Inventory'
 import { ForecastingPage } from '@/pages/Forecasting'
+import { HistoryPage } from '@/pages/History'
 import { CampaignsPage } from '@/pages/Campaigns'
 import { InfoPage } from '@/pages/Info'
 import { Providers } from '@/providers'
@@ -16,6 +17,7 @@ function App() {
             <Route path="/" element={<Dashboard />} />
             <Route path="/inventory" element={<InventoryPage />} />
             <Route path="/forecasting" element={<ForecastingPage />} />
+            <Route path="/history" element={<HistoryPage />} />
             <Route path="/campaigns" element={<CampaignsPage />} />
             <Route path="/info" element={<InfoPage />} />
           </Routes>

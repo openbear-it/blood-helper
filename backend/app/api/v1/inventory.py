@@ -11,6 +11,7 @@ from app.api.v1.schemas import (
     BloodUnitResponse,
     ConsumeBloodRequest,
     ConsumptionResponse,
+    HistoricalDataResponse,
     InventorySummaryResponse,
     PSIResponse,
     PSIBloodTypeResponse,
@@ -21,6 +22,7 @@ from app.api.v1.schemas import (
 from app.application.services.blood_inventory import BloodInventoryService
 from app.application.services.psi import PSIService, ScenarioMethod
 from app.domain.blood_inventory.models import BloodUnit
+from app.domain.enums import BloodType
 from app.infrastructure.database.session import get_session
 from app.infrastructure.repositories.blood_inventory import (
     SQLBloodInventoryRepository,
@@ -195,3 +197,22 @@ async def get_psi(
             for r in result.by_blood_type
         ],
     )
+
+
+@router.get("/history", response_model=HistoricalDataResponse)
+async def get_inventory_history(
+    hospital_id: UUID,
+    start_date: date = Query(...),
+    end_date: date = Query(...),
+    blood_type: BloodType | None = Query(default=None),
+    svc: BloodInventoryService = Depends(get_inventory_service),
+) -> HistoricalDataResponse:
+    if end_date < start_date:
+        raise HTTPException(status_code=422, detail="end_date must be >= start_date")
+    data = await svc.get_history(
+        hospital_id=hospital_id,
+        start_date=start_date,
+        end_date=end_date,
+        blood_type=blood_type,
+    )
+    return HistoricalDataResponse(**data)

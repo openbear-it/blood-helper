@@ -4,6 +4,7 @@
     "hospitals": "Ospedali",
     "inventory": "Magazzino",
     "forecasting": "Previsioni",
+    "history": "Storico",
     "campaigns": "Campagne",
     "info": "Info"
   },
@@ -98,6 +99,27 @@
       "completed": "Completata",
       "cancelled": "Annullata"
     }
+  },
+  "history": {
+    "title": "Dati Storici",
+    "subtitle": "Analisi storica dei consumi, perdite e deficit per gruppo sanguigno",
+    "bloodTypeFilter": "Filtra per Gruppo",
+    "allTypes": "Tutti i Gruppi",
+    "startDate": "Data Inizio",
+    "endDate": "Data Fine",
+    "totalConsumed": "Totale Consumato",
+    "totalWasted": "Totale Perso (Spreco)",
+    "wastageCost": "Costo Sprechi",
+    "deficitDays": "Giorni con Deficit",
+    "deficitAlert": "Attenzione: {{count}} giorn{{count, plural, one{o} other{i}}} con deficit di scorte nel periodo selezionato.",
+    "chartTitle": "Consumi e Perdite nel Tempo",
+    "consumed": "Consumato",
+    "wasted": "Perdite",
+    "net": "Netto (consumato − perso)",
+    "byBloodType": "Riepilogo per Gruppo Sanguigno",
+    "highWastage": "Spreco elevato",
+    "noData": "Nessun dato per il periodo selezionato.",
+    "loadError": "Errore nel caricamento dei dati storici."
   },
   "info": {
     "title": "About blood-helper",

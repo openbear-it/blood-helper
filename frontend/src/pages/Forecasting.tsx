@@ -14,6 +14,7 @@ import {
   Alert,
 } from '@mui/material'
 import {
+  ComposedChart,
   Line,
   XAxis,
   YAxis,
@@ -21,7 +22,6 @@ import {
   Tooltip,
   Legend,
   Area,
-  AreaChart,
   ResponsiveContainer,
 } from 'recharts'
 import { useHospitals, useForecasts, useRunForecast } from '@/hooks/useApi'
@@ -30,6 +30,53 @@ import { useTranslation } from 'react-i18next'
 
 const BLOOD_TYPES: BloodType[] = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']
 const HORIZONS: ForecastHorizon[] = ['daily', 'weekly', 'monthly']
+
+interface TooltipPayloadItem {
+  name: string
+  value: number
+  color: string
+}
+
+interface CustomTooltipProps {
+  active?: boolean
+  payload?: TooltipPayloadItem[]
+  label?: string
+}
+
+function ForecastTooltip({ active, payload, label }: CustomTooltipProps) {
+  if (!active || !payload?.length) return null
+
+  const predicted = payload.find(p => p.name === 'predicted')
+  const upper = payload.find(p => p.name === 'upper')
+  const lower = payload.find(p => p.name === 'lower')
+
+  return (
+    <Box
+      sx={{
+        background: 'rgba(255,255,255,0.97)',
+        border: '1px solid #e0e0e0',
+        borderRadius: 1,
+        p: 1.5,
+        boxShadow: 2,
+        minWidth: 160,
+      }}
+    >
+      <Typography variant="caption" display="block" fontWeight="bold" mb={0.5}>
+        {label}
+      </Typography>
+      {predicted && (
+        <Typography variant="body2" sx={{ color: '#c62828' }}>
+          Previsto: <strong>{predicted.value}</strong>
+        </Typography>
+      )}
+      {upper && lower && (
+        <Typography variant="caption" color="text.secondary">
+          Intervallo: {lower.value} – {upper.value}
+        </Typography>
+      )}
+    </Box>
+  )
+}
 
 export function ForecastingPage() {
   const [hospitalId, setHospitalId] = useState('')
@@ -114,25 +161,34 @@ export function ForecastingPage() {
               Forecast: {bloodType} ({horizon}) — Model: {forecasts?.[0]?.model_name}
             </Typography>
             <ResponsiveContainer width="100%" height={400}>
-              <AreaChart data={chartData}>
+              <ComposedChart data={chartData}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="date" tick={{ fontSize: 12 }} />
                 <YAxis />
-                <Tooltip />
-                <Legend />
+                <Tooltip content={<ForecastTooltip />} />
+                <Legend
+                  formatter={(value: string) => {
+                    if (value === 'predicted') return t('forecasting.predicted')
+                    if (value === 'upper') return t('forecasting.confidence')
+                    return null
+                  }}
+                />
                 <Area
                   type="monotone"
                   dataKey="upper"
                   fill="#ffccbc"
                   stroke="transparent"
-                  name={t('forecasting.confidence')}
+                  name="upper"
+                  legendType="none"
                 />
                 <Area
                   type="monotone"
                   dataKey="lower"
                   fill="white"
                   stroke="transparent"
-                  name={t('forecasting.confidence')}
+                  name="lower"
+                  legendType="none"
+                  tooltipType="none"
                 />
                 <Line
                   type="monotone"
@@ -140,9 +196,10 @@ export function ForecastingPage() {
                   stroke="#c62828"
                   strokeWidth={2}
                   dot={false}
-                  name={t('forecasting.predicted')}
+                  name="predicted"
+                  activeDot={{ r: 5 }}
                 />
-              </AreaChart>
+              </ComposedChart>
             </ResponsiveContainer>
             {forecasts?.[0] && (
               <Typography variant="caption" color="textSecondary">
@@ -157,3 +214,4 @@ export function ForecastingPage() {
     </Box>
   )
 }
+

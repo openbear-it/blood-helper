@@ -2,6 +2,7 @@ import axios from 'axios'
 import type {
   Campaign,
   ForecastResult,
+  HistoricalDataResponse,
   Hospital,
   Department,
   InventorySummary,
@@ -54,6 +55,15 @@ export const inventoryApi = {
     params?: { horizon_days?: number; percentile?: number; method?: ScenarioMethod; history_days?: number; friction?: number }
   ) =>
     api.get<PSIResult>(`/hospitals/${hospitalId}/inventory/psi`, { params }).then(r => r.data),
+  getHistory: (
+    hospitalId: string,
+    startDate: string,
+    endDate: string,
+    bloodType?: string,
+  ) =>
+    api.get<HistoricalDataResponse>(`/hospitals/${hospitalId}/inventory/history`, {
+      params: { start_date: startDate, end_date: endDate, blood_type: bloodType || undefined },
+    }).then(r => r.data),
 }
 
 // ── Forecasting ──────────────────────────────────────────────────────────────

@@ -4,6 +4,7 @@
     "hospitals": "Hospitals",
     "inventory": "Inventory",
     "forecasting": "Forecasting",
+    "history": "History",
     "campaigns": "Campaigns",
     "info": "About"
   },
@@ -98,6 +99,27 @@
       "completed": "Completed",
       "cancelled": "Cancelled"
     }
+  },
+  "history": {
+    "title": "Historical Data",
+    "subtitle": "Historical analysis of consumption, losses and deficits by blood type",
+    "bloodTypeFilter": "Filter by Type",
+    "allTypes": "All Types",
+    "startDate": "Start Date",
+    "endDate": "End Date",
+    "totalConsumed": "Total Consumed",
+    "totalWasted": "Total Wasted",
+    "wastageCost": "Wastage Cost",
+    "deficitDays": "Deficit Days",
+    "deficitAlert": "Warning: {{count}} day(s) with stock deficit in the selected period.",
+    "chartTitle": "Consumption & Losses Over Time",
+    "consumed": "Consumed",
+    "wasted": "Wasted",
+    "net": "Net (consumed − wasted)",
+    "byBloodType": "Summary by Blood Type",
+    "highWastage": "High wastage",
+    "noData": "No data available for the selected period.",
+    "loadError": "Error loading historical data."
   },
   "info": {
     "title": "About blood-helper",
