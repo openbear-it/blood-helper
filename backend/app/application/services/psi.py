@@ -101,7 +101,7 @@ class PSIService:
             )
 
             if expected_demand <= 0:
-                psi = float("inf")
+                psi = 999.0  # sentinel: unlimited supply (JSON-safe)
             else:
                 psi = (stock_net_valid + expected_inflows) / expected_demand
 
@@ -123,10 +123,10 @@ class PSIService:
         if total_demand > 0:
             overall_psi = sum(
                 r.psi * r.expected_demand for r in results
-                if not math.isinf(r.psi)
+                if r.psi < 999.0
             ) / total_demand
         else:
-            overall_psi = float("inf")
+            overall_psi = 999.0
 
         critical = [
             r.blood_type for r in results
