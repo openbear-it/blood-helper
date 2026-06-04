@@ -245,9 +245,10 @@ class PSIService:
         """
         # Proxy: new BloodUnit rows created in the history window represent inflows
         history_end = today - timedelta(days=1)
+        date_col = func.date(BloodUnitORM.last_updated).label("day")
         stmt = (
             select(
-                BloodUnitORM.last_updated,
+                date_col,
                 func.sum(BloodUnitORM.units_available).label("total"),
             )
             .where(
@@ -256,7 +257,7 @@ class PSIService:
                 func.date(BloodUnitORM.last_updated) >= history_start,
                 func.date(BloodUnitORM.last_updated) <= history_end,
             )
-            .group_by(func.date(BloodUnitORM.last_updated))
+            .group_by(date_col)
         )
         result = await self._session.execute(stmt)
         rows = result.all()
