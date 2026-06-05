@@ -3,7 +3,7 @@ from __future__ import annotations
 import uuid
 from datetime import date
 
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.domain.enums import BloodType, ForecastHorizon
@@ -56,12 +56,22 @@ class SQLForecastRepository(ForecastRepository):
         blood_type: BloodType,
         horizon: ForecastHorizon,
     ) -> list[ForecastResult]:
+        latest_created_at = (
+            select(func.max(ForecastResultORM.created_at))
+            .where(
+                ForecastResultORM.hospital_id == hospital_id,
+                ForecastResultORM.blood_type == blood_type,
+                ForecastResultORM.horizon == horizon,
+            )
+            .scalar_subquery()
+        )
         stmt = (
             select(ForecastResultORM)
             .where(
                 ForecastResultORM.hospital_id == hospital_id,
                 ForecastResultORM.blood_type == blood_type,
                 ForecastResultORM.horizon == horizon,
+                ForecastResultORM.created_at == latest_created_at,
             )
             .order_by(ForecastResultORM.forecast_date.asc())
         )
@@ -74,12 +84,22 @@ class SQLForecastRepository(ForecastRepository):
         blood_type: BloodType,
         horizon: ForecastHorizon,
     ) -> list[ForecastResult]:
+        latest_created_at = (
+            select(func.max(ForecastResultORM.created_at))
+            .where(
+                ForecastResultORM.department_id == department_id,
+                ForecastResultORM.blood_type == blood_type,
+                ForecastResultORM.horizon == horizon,
+            )
+            .scalar_subquery()
+        )
         stmt = (
             select(ForecastResultORM)
             .where(
                 ForecastResultORM.department_id == department_id,
                 ForecastResultORM.blood_type == blood_type,
                 ForecastResultORM.horizon == horizon,
+                ForecastResultORM.created_at == latest_created_at,
             )
             .order_by(ForecastResultORM.forecast_date.asc())
         )

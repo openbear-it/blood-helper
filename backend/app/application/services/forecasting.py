@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import uuid
 from datetime import date, timedelta
+from datetime import datetime
 
 import pandas as pd
 
@@ -36,6 +37,7 @@ class ForecastingService:
         horizon: ForecastHorizon,
         department_id: uuid.UUID | None = None,
     ) -> list[ForecastResult]:
+        batch_created_at = datetime.utcnow()
         end_date = date.today()
         start_date = end_date - timedelta(days=365)
 
@@ -79,6 +81,7 @@ class ForecastingService:
                 confidence=output.confidence,
                 department_id=department_id,
             )
+            result.created_at = batch_created_at
             await self._forecast.save(result)
             results.append(result)
 
